@@ -2,14 +2,16 @@ package com.gzeinnumer.mylibrecyclerviewadapterbuilderexamplekt
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.gzeinnumer.mylibrecyclerviewadapterbuilder.AdapterCreator
-import com.gzeinnumer.mylibrecyclerviewadapterbuilder.BuildAdapter
+import com.gzeinnumer.mylibrecyclerviewadapterbuilder.AdapterBuilder
 import com.gzeinnumer.mylibrecyclerviewadapterbuilderexamplekt.databinding.ActivityMainBinding
 import com.gzeinnumer.mylibrecyclerviewadapterbuilderexamplekt.databinding.RvItemBinding
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -18,39 +20,77 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        type1()
-//        type2();
+
+        initAdapter()
     }
 
-    private fun type1() {
+    private fun initAdapter() {
         val list: MutableList<MyModel> = ArrayList()
         for (i in 0..9) {
             list.add(MyModel(i, "Data Ke " + (i + 1)))
         }
 
-        val adapter: AdapterCreator<MyModel> = BuildAdapter<MyModel>(R.layout.rv_item)
-                .setCustomNoItem(R.layout.custom_empty_item)
-                .setAnimation(R.anim.anim_two)
-                .setList(list)
-                .onBind { holder, position ->
-                    //rv_item = RvItemBinding
-                    val b = RvItemBinding.bind(holder)
-                    b.btn.text = list[position].id.toString() + "_" + list[position].name
-                    b.btn.setOnClickListener { Toast.makeText(this@MainActivity, "tekan $position", Toast.LENGTH_SHORT).show() }
+        val adapter = AdapterBuilder<MyModel>(R.layout.rv_item)
+            .setList(list)
+            .setCustomNoItem(R.layout.custom_empty_item)
+            .setAnimation(R.anim.anim_two)
+            .setDivider(R.layout.custom_divider)
+            .onBind { holder, data, position ->
+                //rv_item = RvItemBinding
+                val bindingItem = RvItemBinding.bind(holder)
+                bindingItem.btn.text = data.id.toString() + "_" + data.name
+                bindingItem.btn.setOnClickListener {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "tekan $position",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+            }
+            .onFilter { constraint, listFilter ->
+                val fildteredList: MutableList<MyModel> = ArrayList()
+
+                if (constraint == null || constraint.isEmpty()) {
+                    listFilter.sortWith(Comparator { o1, o2 ->
+                        o1.name.toLowerCase().compareTo(o2.name.toLowerCase())
+                    })
+                    fildteredList.addAll(listFilter)
+                } else {
+                    val filterPattern = constraint.toString().toLowerCase().trim { it <= ' ' }
+                    for (item in listFilter) {
+                        if (item.id.toString().toLowerCase().contains(filterPattern)) {
+                            fildteredList.add(item)
+                        }
+                    }
+                }
+                fildteredList
+            }
+
         binding.rv.layoutManager = LinearLayoutManager(applicationContext)
         binding.rv.hasFixedSize()
         binding.rv.adapter = adapter
 
+        //after 5 second, new data will appear
         object : CountDownTimer(5000, 1000) {
             override fun onTick(millisUntilFinished: Long) {}
             override fun onFinish() {
-
                 for (i in 10..100) {
                     list.add(MyModel(i, "Data Ke " + (i + 1)))
                 }
                 adapter.setList(list)
             }
         }.start()
+
+        //use filter on TextWacher
+        binding.ed.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable) {
+                //call the filter
+                adapter.filter.filter(s)
+            }
+        })
     }
 }
