@@ -50,15 +50,13 @@ class MainActivity : AppCompatActivity() {
             .onFilter { constraint, listFilter ->
                 val fildteredList: MutableList<MyModel> = ArrayList()
 
-                if (constraint == null || constraint.isEmpty()) {
-                    listFilter.sortWith(Comparator { o1, o2 ->
-                        o1.name.toLowerCase().compareTo(o2.name.toLowerCase())
-                    })
-                    fildteredList.addAll(listFilter)
-                } else {
+                if (constraint.isNotEmpty()) {
                     val filterPattern = constraint.toString().toLowerCase().trim { it <= ' ' }
                     for (item in listFilter) {
                         if (item.id.toString().toLowerCase().contains(filterPattern)) {
+                            fildteredList.add(item)
+                        }
+                        if (item.name.toString().toLowerCase().contains(filterPattern)) {
                             fildteredList.add(item)
                         }
                     }
@@ -66,9 +64,9 @@ class MainActivity : AppCompatActivity() {
                 fildteredList
             }
 
+        binding.rv.adapter = adapter
         binding.rv.layoutManager = LinearLayoutManager(applicationContext)
         binding.rv.hasFixedSize()
-        binding.rv.adapter = adapter
 
         //after 5 second, new data will appear
         object : CountDownTimer(5000, 1000) {
