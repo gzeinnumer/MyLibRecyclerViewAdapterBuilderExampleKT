@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
                 .setAnimation(R.anim.anim_two)
                 .setList(list)
                 .onBind { holder, position ->
+                    //rv_item = RvItemBinding
                     val b = RvItemBinding.bind(holder)
                     b.btn.text = list[position].id.toString() + "_" + list[position].name
                     b.btn.setOnClickListener { Toast.makeText(this@MainActivity, "tekan $position", Toast.LENGTH_SHORT).show() }
