@@ -1,9 +1,7 @@
 package com.gzeinnumer.mylibrecyclerviewadapterbuilderexamplekt
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         val adapter: AdapterCreator<MyModel> = BuildAdapter<MyModel>(R.layout.rv_item)
                 .setCustomNoItem(R.layout.custom_empty_item)
                 .setAnimation(R.anim.anim_two)
-//                .setList(list)
+                .setList(list)
                 .onBind { holder, position ->
                     val b = RvItemBinding.bind(holder)
                     b.btn.text = list[position].id.toString() + "_" + list[position].name
@@ -47,7 +45,10 @@ class MainActivity : AppCompatActivity() {
             override fun onTick(millisUntilFinished: Long) {}
             override fun onFinish() {
 
-//                adapter.setList(list)
+                for (i in 10..100) {
+                    list.add(MyModel(i, "Data Ke " + (i + 1)))
+                }
+                adapter.setList(list)
             }
         }.start()
     }
