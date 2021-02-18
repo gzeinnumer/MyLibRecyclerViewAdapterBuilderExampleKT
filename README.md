@@ -1,2 +1,2 @@
 # MyLibRecyclerViewAdapterBuilderExampleKT
- sample app from https://github.com/gzeinnumer/MyLibRecyclerViewAdapterBuilder
+ sample app from https://github.com/gzeinnumer/RecyclerViewAdapterBuilder
