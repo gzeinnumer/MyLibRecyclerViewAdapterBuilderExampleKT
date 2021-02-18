@@ -8,13 +8,14 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.gzeinnumer.mylibrecyclerviewadapterbuilder.helper.BindViewHolderMultiType
-import com.gzeinnumer.mylibrecyclerviewadapterbuilder.model.TypeViewItem
-import com.gzeinnumer.mylibrecyclerviewadapterbuilder.multiType.AdapterBuilderMultiType
-import com.gzeinnumer.mylibrecyclerviewadapterbuilder.singleType.AdapterBuilder
 import com.gzeinnumer.mylibrecyclerviewadapterbuilderexamplekt.databinding.ActivityMainBinding
 import com.gzeinnumer.mylibrecyclerviewadapterbuilderexamplekt.databinding.RvItemBinding
 import com.gzeinnumer.mylibrecyclerviewadapterbuilderexamplekt.databinding.RvItemGenapBinding
+import com.gzeinnumer.rab.helper.BindViewHolderMultiType
+import com.gzeinnumer.rab.model.TypeViewItem
+import com.gzeinnumer.rab.multiType.AdapterBuilderMultiType
+import com.gzeinnumer.rab.multiType.AdapterCreatorMultiType
+import com.gzeinnumer.rab.singleType.AdapterBuilder
 import java.util.*
 
 
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
             .setCustomNoItem(R.layout.custom_empty_item)
             .setAnimation(R.anim.anim_two)
             .setDivider(R.layout.custom_divider)
-            .onBind { holder, data, position ->
+            .onBind { adapter, holder, data, position ->
                 //rv_item = RvItemBinding
                 val bindingItem = RvItemBinding.bind(holder)
                 bindingItem.btn.text = data.id.toString() + "_" + data.name
@@ -121,7 +122,7 @@ class MainActivity : AppCompatActivity() {
                         TypeViewItem(TYPE_GANJIL, R.layout.rv_item)
                 }
 
-                override fun bind(holder: View, data: MyModel, position: Int, viewType: Int) {
+                override fun bind(adapter: AdapterCreatorMultiType<MyModel>, holder: View, data: MyModel, position: Int, viewType: Int) {
                     if (viewType == TYPE_GENAP) {
                         val bindingItem = RvItemGenapBinding.bind(holder)
                         bindingItem.btn.text = data.id.toString() + "_" + data.name + "_Genap"
@@ -130,6 +131,7 @@ class MainActivity : AppCompatActivity() {
                         bindingItem.btn.text = data.id.toString() + "_" + data.name + "_Ganjil"
                     }
                 }
+
             })
             .onFilter { constraint, listFilter ->
                 val fildteredList: MutableList<MyModel> = ArrayList()
